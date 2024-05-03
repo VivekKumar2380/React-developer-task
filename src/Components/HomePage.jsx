@@ -49,7 +49,7 @@ const HomePage = () => {
           textAlign: "center",
         }}
       >
-        Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        Post project ©{new Date().getFullYear()} Created by Vivek
       </Footer>
     </Layout>
   );
