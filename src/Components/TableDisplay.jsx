@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Select, Input, Table, Tag, Row, Col,Skeleton,Spin } from "antd";
+import { Select, Input, Table, Tag, Row, Col, Skeleton, Spin } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 const { Search } = Input;
 // Component to display a table of posts
@@ -70,24 +70,24 @@ const TableDisplay = () => {
     const limit = 10;
     const skip = (page - 1) * limit;
     let url = `https://dummyjson.com/posts?skip=${skip}&limit=${limit}`;
-    
+
     if (searchQuery) {
       url = `https://dummyjson.com/posts/search?q=${searchQuery}&skip=${skip}&limit=${limit}`;
     }
-  
+
     try {
       const response = await axios.get(url);
       const fetchedPosts = response.data.posts;
-      
+
       // Filter posts based on selected tags
       const filteredPosts = fetchedPosts.filter((post) => {
         return tags.every((tag) => post.tags.includes(tag));
       });
-  
+
       setPosts(fetchedPosts);
       setFilteredPosts(filteredPosts);
       setTotalPage(response.data.total);
-  
+
       // Update URL query parameters
       const newQueryParams = new URLSearchParams(location.search);
       newQueryParams.set("page", page);
@@ -105,7 +105,6 @@ const TableDisplay = () => {
       setLoading(false);
     }
   };
-  
 
   const handleSearch = (value) => {
     setSearchQuery(value);
@@ -225,7 +224,7 @@ const TableDisplay = () => {
           }}
           onChange={handleTableChange}
           scroll={{ x: true }}
-          loading={loading ? <Spin/>  : false}
+          loading={loading ? <Spin /> : false}
         />
       </Col>
     </Row>
