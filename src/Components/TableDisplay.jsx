@@ -28,43 +28,84 @@ const TableDisplay = () => {
   //   const [selectedTags, setSelectedTags] = useState([]);
 
   // Fetch posts from API based on current page
+  // const fetchPosts = async (page, searchQuery, tags) => {
+  //   setLoading(true);
+  //   const limit = 10;
+  //   const skip = (page - 1) * limit;
+  //   let url = `https://dummyjson.com/posts?skip=${skip}&limit=${limit}`;
+  //   if (searchQuery) {
+  //     url = `https://dummyjson.com/posts/search?q=${searchQuery}&skip=${skip}&limit=${limit}`;
+  //     console.log(url);
+  //   }
+
+  //   try {
+  //     const response = await axios.get(url);
+  //     setPosts(response.data.posts);
+  //     setTotalPage(response.data.total);
+  //     const filteredPosts = posts.filter((post) => {
+  //       return selectedTags.every((tag) => post.tags.includes(tag));
+  //     });
+  //     setFilteredPosts(filteredPosts);
+  //     //   console.log(totalPage);
+
+  //     // Update URL query parameter with current page
+  //     queryParams.set("page", page);
+  //     if (searchQuery) {
+  //       queryParams.set("search", searchQuery);
+  //     } else {
+  //       queryParams.delete("search");
+  //     }
+  //     queryParams.delete("tags");
+  //     tags.forEach((tag) => queryParams.append("tags", tag));
+  //     navigate({ search: queryParams.toString() });
+  //   } catch (error) {
+  //     // Handle errors
+  //     setError(error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const fetchPosts = async (page, searchQuery, tags) => {
     setLoading(true);
     const limit = 10;
     const skip = (page - 1) * limit;
     let url = `https://dummyjson.com/posts?skip=${skip}&limit=${limit}`;
+    
     if (searchQuery) {
       url = `https://dummyjson.com/posts/search?q=${searchQuery}&skip=${skip}&limit=${limit}`;
-      console.log(url);
     }
-
+  
     try {
       const response = await axios.get(url);
-      setPosts(response.data.posts);
-      setTotalPage(response.data.total);
-      const filteredPosts = posts.filter((post) => {
-        return selectedTags.every((tag) => post.tags.includes(tag));
+      const fetchedPosts = response.data.posts;
+      
+      // Filter posts based on selected tags
+      const filteredPosts = fetchedPosts.filter((post) => {
+        return tags.every((tag) => post.tags.includes(tag));
       });
+  
+      setPosts(fetchedPosts);
       setFilteredPosts(filteredPosts);
-      //   console.log(totalPage);
-
-      // Update URL query parameter with current page
-      queryParams.set("page", page);
+      setTotalPage(response.data.total);
+  
+      // Update URL query parameters
+      const newQueryParams = new URLSearchParams(location.search);
+      newQueryParams.set("page", page);
       if (searchQuery) {
-        queryParams.set("search", searchQuery);
+        newQueryParams.set("search", searchQuery);
       } else {
-        queryParams.delete("search");
+        newQueryParams.delete("search");
       }
-      queryParams.delete("tags");
-      tags.forEach((tag) => queryParams.append("tags", tag));
-      navigate({ search: queryParams.toString() });
+      newQueryParams.delete("tags");
+      tags.forEach((tag) => newQueryParams.append("tags", tag));
+      navigate({ search: newQueryParams.toString() });
     } catch (error) {
-      // Handle errors
       setError(error.message);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleSearch = (value) => {
     setSearchQuery(value);
