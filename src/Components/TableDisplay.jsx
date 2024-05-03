@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Select, Input, Table, Tag } from "antd";
+import { Select, Input, Table, Tag, Row, Col,Skeleton,Spin } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 const { Search } = Input;
 // Component to display a table of posts
@@ -29,6 +29,7 @@ const TableDisplay = () => {
 
   // Fetch posts from API based on current page
   const fetchPosts = async (page, searchQuery, tags) => {
+    setLoading(true);
     const limit = 10;
     const skip = (page - 1) * limit;
     let url = `https://dummyjson.com/posts?skip=${skip}&limit=${limit}`;
@@ -134,52 +135,59 @@ const TableDisplay = () => {
       key: "reactions",
     },
   ];
-
+  // Render loading state if data is still being fetched
+  // if (loading) {
+  //   return <div><Spin/></div>;
+  // }
   // Render the table component
   return (
-    <div>
-      <Select
-        style={{ width: "70%", marginBottom: "10px" }}
-        placeholder="Select Filter"
-        onChange={handleNewFilter}
-        value={selectedTags}
-        mode="multiple"
-      >
-        {[
-          "crime",
-          "history",
-          "american",
-          "magical",
-          "english",
-          "french",
-          "mystery",
-        ].map((tag) => (
-          <Select.Option key={tag} value={tag}>
-            {tag}
-          </Select.Option>
-        ))}
-      </Select>
-
-      <Search
-        placeholder="Search posts"
-        allowClear
-        enterButton="Search"
-        size="large"
-        onSearch={handleSearch}
-        style={{ marginBottom: 16 }}
-      />
-
-      <Table
-        columns={columns}
-        dataSource={filteredPosts.length < 1 ? posts : filteredPosts}
-        pagination={{
-          current: currentPage,
-          total: totalPage,
-          pageSize: 10,
-        }}
-        onChange={handleTableChange}
-      />
-    </div>
+    <Row gutter={[16, 16]}>
+      <Col xs={24} sm={12} md={8} lg={6}>
+        <Select
+          style={{ width: "100%" }}
+          placeholder="Select Filter"
+          onChange={handleNewFilter}
+          value={selectedTags}
+          mode="multiple"
+        >
+          {[
+            "crime",
+            "history",
+            "american",
+            "magical",
+            "english",
+            "french",
+            "mystery",
+          ].map((tag) => (
+            <Select.Option key={tag} value={tag}>
+              {tag}
+            </Select.Option>
+          ))}
+        </Select>
+      </Col>
+      <Col xs={24} sm={12} md={16} lg={18}>
+        <Search
+          placeholder="Search posts"
+          allowClear
+          enterButton="Search"
+          size="large"
+          onSearch={handleSearch}
+        />
+      </Col>
+      <Col span={24}>
+        <Table
+          columns={columns}
+          dataSource={filteredPosts.length < 1 ? posts : filteredPosts}
+          pagination={{
+            total: totalPage,
+            pageSize: 10,
+          }}
+          onChange={handleTableChange}
+          scroll={{ x: true }}
+          loading={loading ? <Spin/>  : false}
+        />
+      </Col>
+    </Row>
   );
 };
 
